@@ -3,9 +3,9 @@ import {
   prop,
   Ref,
   ReturnModelType,
-} from '@typegoose/typegoose';
-import { Project } from './Project';
-import { ChatUser } from './ChatUser';
+} from "@typegoose/typegoose";
+import { Project } from "./Project";
+import { ChatUser } from "./ChatUser";
 
 export class ChannelMember {
   @prop({ required: true, ref: () => Channel })
@@ -29,17 +29,17 @@ export class Channel {
     const get = await this.aggregate([
       {
         $match: {
-          type: '1-1',
+          type: "1-1",
           project: data.project,
           key: data.key,
         },
       },
       {
         $lookup: {
-          from: 'channelmembers',
-          localField: '_id',
-          foreignField: 'channel',
-          as: 'members',
+          from: "channelmembers",
+          localField: "_id",
+          foreignField: "channel",
+          as: "members",
         },
       },
     ]);
@@ -48,7 +48,7 @@ export class Channel {
 
     const newChannel = await this.create({
       project: data.project,
-      type: '1-1',
+      type: "1-1",
       key: data.key,
     });
     const members = await ChannelMemberModel.create([

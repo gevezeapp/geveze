@@ -1,4 +1,4 @@
-import { UserModel } from 'src/models/User';
+import { UserModel } from '@geveze/db';
 import { LoginCommand } from '../commands/login-command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 export class LoginHandler implements ICommandHandler<LoginCommand> {
   constructor(private jwtService: JwtService) {}
 
-  async execute(command: LoginCommand): Promise<any> {
+  async execute(command: LoginCommand): Promise<{ token: string }> {
     const user = await UserModel.findOne({ email: command.email });
 
     if (!user || !user.checkPassword(command.password))

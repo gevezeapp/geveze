@@ -1,6 +1,6 @@
-import { getModelForClass, prop, pre, Ref } from '@typegoose/typegoose';
-import { User } from './User';
-import * as randomstring from 'randomstring';
+import { getModelForClass, prop, pre, Ref } from "@typegoose/typegoose";
+import { User } from "./User";
+import * as randomstring from "randomstring";
 
 class ProjectMember {
   @prop({ ref: () => Project })
@@ -9,11 +9,11 @@ class ProjectMember {
   @prop({ ref: () => User })
   public user: Ref<User>;
 
-  @prop({ default: 'owner' })
+  @prop({ default: "owner" })
   public role: string;
 }
 
-@pre<any>('save', function () {
+@pre<any>("save", function () {
   this.key = randomstring.generate(10);
   this.secret = randomstring.generate();
 })

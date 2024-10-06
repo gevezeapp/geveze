@@ -1,8 +1,5 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtService } from '@nestjs/jwt';
-import { ChatUserModel } from 'src/models/ChatUser';
-import { ProjectMemberModel, ProjectModel } from 'src/models/Project';
+import { Body, Controller, Post } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 import { TokenCommand } from './commands/token.command';
 
 @Controller('chat')

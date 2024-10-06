@@ -37,7 +37,8 @@
     "mongoose": "^8.7.0",
     "randomstring": "^1.3.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "@geveze/db": "workspace:*"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

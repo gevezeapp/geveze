@@ -1,4 +1,4 @@
-import { UserModel } from 'src/models/User';
+import { UserModel } from '@geveze/db';
 import { LoginCommand } from '../commands/login-command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
@@ -9,7 +9,7 @@ import { BadRequestException } from '@nestjs/common';
 export class RegisterHandler implements ICommandHandler<RegisterCommand> {
   constructor(private jwtService: JwtService) {}
 
-  async execute(command: LoginCommand): Promise<any> {
+  async execute(command: LoginCommand): Promise<{ token: string }> {
     try {
       const user = await UserModel.create(command);
 

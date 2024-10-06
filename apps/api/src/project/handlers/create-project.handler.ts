@@ -1,9 +1,7 @@
-import { UserModel } from 'src/models/User';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateProjectCommand } from '../commands/create-project.command';
-import { ProjectMemberModel, ProjectModel } from 'src/models/Project';
+import { ProjectMemberModel, Project, ProjectModel } from '@geveze/db';
 
 @CommandHandler(CreateProjectCommand)
 export class CreateProjectHandler
@@ -11,10 +9,12 @@ export class CreateProjectHandler
 {
   constructor(private jwtService: JwtService) {}
 
-  async execute(command: CreateProjectCommand): Promise<any> {
+  async execute(
+    command: CreateProjectCommand,
+  ): Promise<{ project: Project; token: string }> {
     const project = await ProjectModel.create(command);
 
-    const membership = await ProjectMemberModel.create({
+    await ProjectMemberModel.create({
       project: project._id,
       user: command.user._id,
     });

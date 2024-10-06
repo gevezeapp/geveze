@@ -3,10 +3,10 @@ import {
   prop,
   pre,
   DocumentType,
-} from '@typegoose/typegoose';
-import * as bcrypt from 'bcryptjs';
+} from "@typegoose/typegoose";
+import * as bcrypt from "bcryptjs";
 
-@pre<any>('save', function () {
+@pre<any>("save", function () {
   this.password = bcrypt.hashSync(this.password, 8);
 })
 export class User {

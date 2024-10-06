@@ -1,5 +1,5 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose';
-import { Project } from './Project';
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
+import { Project } from "./Project";
 
 export class ChatUser {
   @prop({ required: true })

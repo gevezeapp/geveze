@@ -1,16 +1,6 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Request,
-  Get,
-  UseGuards,
-  Req,
-  Param,
-  Inject,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { ChatAuthGuard } from '../auth.guard';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { QueryBus } from '@nestjs/cqrs';
 import { ListUsersQuery } from '../queries/list-users.query';
 
 @UseGuards(ChatAuthGuard)
