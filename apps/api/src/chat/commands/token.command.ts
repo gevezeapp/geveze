@@ -1,3 +1,3 @@
 export class TokenCommand {
-  constructor(public readonly project: string, public readonly id: string) {}
+  constructor(public readonly project: string, public readonly token: string) {}
 }
