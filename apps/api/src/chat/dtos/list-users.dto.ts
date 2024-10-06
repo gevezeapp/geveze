@@ -1,12 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class ListUsersDto {
   @IsNumber()
   @Min(1)
+  @IsOptional()
   @Type(() => Number)
-  page: number;
+  page?: number;
 
   @IsString()
+  @IsOptional()
   q?: string;
 }
