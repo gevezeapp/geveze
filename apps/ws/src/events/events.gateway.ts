@@ -34,8 +34,4 @@ export class EventsGateway {
       }
     });
   }
-
-  async handleConnection(client: Socket) {}
-
-  handleDisconnect(client: Socket) {}
 }

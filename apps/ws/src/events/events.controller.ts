@@ -1,10 +1,25 @@
 import { Controller } from '@nestjs/common';
-import { Ctx, EventPattern, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  Payload,
+  RedisContext,
+} from '@nestjs/microservices';
+import { Server } from 'socket.io';
 
 @Controller()
 export class EventsController {
   @EventPattern('NEW_MESSAGE')
-  async getNotifications(@Payload() data: any, @Ctx() context: any) {
-    context.server.to('66fd9eaaac5d98b7fce53a8c').emit('mexsage', data);
+  async getNotifications(
+    @Payload()
+    data: {
+      channel: { members: { user: string }[] };
+      message: { message: string };
+    },
+    @Ctx() context: RedisContext & { server: Server },
+  ) {
+    context.server
+      .to(data.channel.members.map((member) => member.user))
+      .emit('NEW_MESSAGE', data);
   }
 }
