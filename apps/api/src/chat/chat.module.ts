@@ -10,6 +10,8 @@ import { ListChannelsHandler } from './handlers/list-channels.handler';
 import { ListUsersHandler } from './handlers/list-users.handler';
 import { UserController } from './controllers/user.controller';
 import { ListMessagesHandler } from './handlers/list-messages.handler';
+import { GetChannelHandler } from './handlers/get-channel.handler';
+import { GetUserHandler } from './handlers/get-user.handler';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { ListMessagesHandler } from './handlers/list-messages.handler';
     ListChannelsHandler,
     ListUsersHandler,
     ListMessagesHandler,
+    GetChannelHandler,
+    GetUserHandler,
   ],
 })
 export class ChatModule {}

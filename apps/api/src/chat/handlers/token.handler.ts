@@ -25,9 +25,16 @@ export class TokenHandler implements ICommandHandler<TokenCommand> {
           'string.empty': `token id field can't be empty`,
           'any.required': `token should have id field`,
         }),
-        displayName: Joi.string().messages({
+        displayName: Joi.string().required().messages({
           'string.base': `token displayName field should be a string`,
           'string.empty': `token displayName field can't be empty`,
+          'any.required': `token should have displayName field`,
+        }),
+        profilePicture: Joi.string().uri().messages({
+          'string.base': `token profilePicture field should be a string`,
+          'string.empty': `token profilePicture field can't be empty`,
+          'string.uri': `token profilePicture field should be a uri`,
+          'any.required': `token should have profilePicture field`,
         }),
         username: Joi.string().messages({
           'string.base': `token displayName field should be a string`,
@@ -48,6 +55,7 @@ export class TokenHandler implements ICommandHandler<TokenCommand> {
         },
         {
           displayName: value.displayName,
+          profilePicture: value.profilePicture,
           username: value.username,
         },
         { upsert: true, new: true },
@@ -55,6 +63,7 @@ export class TokenHandler implements ICommandHandler<TokenCommand> {
 
       const token = await this.jwtService.signAsync({
         _id: chatUser.id,
+        id: chatUser.externalId,
         project: project.key,
         aud: 'chat',
       });

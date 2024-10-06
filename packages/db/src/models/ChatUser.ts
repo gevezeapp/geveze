@@ -11,6 +11,12 @@ export class ChatUser {
   @prop()
   public username?: string;
 
+  @prop()
+  public profilePicture?: string;
+
+  @prop({ default: false })
+  public isOnline?: boolean;
+
   @prop({ required: true, ref: () => Project })
   public project: Ref<Project>;
 }

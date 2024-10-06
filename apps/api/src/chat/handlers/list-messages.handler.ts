@@ -5,9 +5,12 @@ import { NotFoundException } from '@nestjs/common';
 
 @QueryHandler(ListMessagesQuery)
 export class ListMessagesHandler implements IQueryHandler<ListMessagesQuery> {
-  async execute(
-    query: ListMessagesQuery,
-  ): Promise<{ messages: Message[]; total: number; hasNextPage: boolean }> {
+  async execute(query: ListMessagesQuery): Promise<{
+    messages: Message[];
+    total: number;
+    hasNextPage: boolean;
+    page: number;
+  }> {
     const membership = await ChannelMemberModel.findOne({
       channel: query.channel,
       user: query.user,
@@ -30,12 +33,12 @@ export class ListMessagesHandler implements IQueryHandler<ListMessagesQuery> {
       .skip(skip)
       .populate({
         path: 'sender',
-        select: { id: 'externalId', _id: 0, displayName: 1, username: 1 },
+        select: { id: '$externalId', _id: 0, displayName: 1, username: 1 },
       });
 
     const total = await MessageModel.countDocuments(filter);
     const hasNextPage = total > page * limit;
 
-    return { messages, total, hasNextPage };
+    return { messages, total, hasNextPage, page };
   }
 }

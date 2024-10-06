@@ -1,0 +1,18 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES6",
+    "esModuleInterop": true,
+    "module": "NodeNext",
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "NodeNext",
+    "skipLibCheck": true,
+    "strict": true,
+    "outDir": "dist",
+    "noEmit": true
+  }
+}

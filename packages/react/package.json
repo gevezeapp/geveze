@@ -1,0 +1,29 @@
+{
+  "name": "@geveze/react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.59.0",
+    "axios": "^1.7.7",
+    "jwt-decode": "^4.0.0",
+    "react": "^18.3.1",
+    "socket.io-client": "^4.8.0"
+  }
+}

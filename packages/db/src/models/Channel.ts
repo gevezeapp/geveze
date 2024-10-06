@@ -15,6 +15,12 @@ export class ChannelMember {
   @prop({ required: true, ref: () => ChatUser })
   public user: Ref<ChatUser>;
 
+  @prop({ default: 0 })
+  public unread: number;
+
+  @prop({ default: Date.now() })
+  public lastActivity: number;
+
   public static async listChannels(
     this: ReturnModelType<typeof ChannelMember>,
     data
@@ -23,8 +29,12 @@ export class ChannelMember {
       {
         $match: {
           user: mongoose.Types.ObjectId.createFromHexString(data.user),
+          ...(data.channel && {
+            channel: mongoose.Types.ObjectId.createFromHexString(data.channel),
+          }),
         },
       },
+      { $sort: { lastActivity: -1 } },
       { $skip: data.skip },
       {
         $limit: data.limit,
@@ -87,7 +97,10 @@ export class ChannelMember {
                         {
                           $project: {
                             id: "$externalId",
-                            _id: 0,
+                            _id: 1,
+                            displayName: 1,
+                            isOnline: 1,
+                            profilePicture: 1,
                           },
                         },
                       ],
@@ -96,7 +109,7 @@ export class ChannelMember {
                   },
                   { $limit: 2 },
                   { $unwind: "$user" },
-                  { $project: { channel: 0, __v: 0 } },
+                  { $project: { channel: 0, __v: 0, _id: 1 } },
                 ],
                 as: "members",
               },
@@ -105,6 +118,7 @@ export class ChannelMember {
               $project: {
                 _id: 1,
                 members: 1,
+                unread: 1,
                 lastMessage: {
                   $arrayElemAt: ["$lastMessage", 0],
                 },
@@ -115,15 +129,19 @@ export class ChannelMember {
         },
       },
       { $unwind: "$channel" },
-
       {
         $replaceRoot: {
-          newRoot: "$channel",
+          newRoot: { $mergeObjects: [{ unread: "$unread" }, "$channel"] },
         },
       },
     ]);
 
-    return list;
+    return list.map((item) => ({
+      ...item,
+      user: item.members.find(
+        (member) => member.user._id.toString() != data.user
+      ).user,
+    }));
   }
 }
 

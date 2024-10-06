@@ -15,11 +15,10 @@ export class EventsController {
     data: {
       channel: { members: { user: string }[] };
       message: { message: string };
+      to: string[];
     },
     @Ctx() context: RedisContext & { server: Server },
   ) {
-    context.server
-      .to(data.channel.members.map((member) => member.user))
-      .emit('NEW_MESSAGE', data);
+    context.server.to(data.to).emit('NEW_MESSAGE', data);
   }
 }

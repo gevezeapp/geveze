@@ -1,7 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ListChannelsQuery } from '../queries/list-channels.query';
-import { ChannelMember, ChannelMemberModel, ChannelModel } from '@geveze/db';
-import mongoose from 'mongoose';
+import { ChannelMember, ChannelMemberModel } from '@geveze/db';
 
 @QueryHandler(ListChannelsQuery)
 export class ListChannelsHandler implements IQueryHandler<ListChannelsQuery> {
@@ -9,6 +8,7 @@ export class ListChannelsHandler implements IQueryHandler<ListChannelsQuery> {
     channels: ChannelMember[];
     total: number;
     hasNextPage: boolean;
+    page: number;
   }> {
     const limit = 20;
     const page = query.page;
@@ -26,6 +26,6 @@ export class ListChannelsHandler implements IQueryHandler<ListChannelsQuery> {
 
     const hasNextPage = false;
 
-    return { channels, total, hasNextPage };
+    return { channels, total, hasNextPage, page };
   }
 }

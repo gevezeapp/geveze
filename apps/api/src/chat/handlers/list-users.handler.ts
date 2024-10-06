@@ -4,9 +4,12 @@ import { ChatUser, ChatUserModel, ProjectModel } from '@geveze/db';
 
 @QueryHandler(ListUsersQuery)
 export class ListUsersHandler implements IQueryHandler<ListUsersQuery> {
-  async execute(
-    query: ListUsersQuery,
-  ): Promise<{ users: ChatUser[]; hasNextPage: boolean; total: number }> {
+  async execute(query: ListUsersQuery): Promise<{
+    users: ChatUser[];
+    hasNextPage: boolean;
+    total: number;
+    page: number;
+  }> {
     const limit = 20;
     const page = query.page || 1;
     const skip = (page - 1) * limit;
@@ -27,7 +30,13 @@ export class ListUsersHandler implements IQueryHandler<ListUsersQuery> {
       filter,
       {},
       {
-        projection: { id: '$externalId', _id: 0, username: 1, displayName: 1 },
+        projection: {
+          id: '$externalId',
+          _id: 0,
+          username: 1,
+          displayName: 1,
+          profilePicture: 1,
+        },
       },
     )
       .limit(limit)
@@ -37,6 +46,6 @@ export class ListUsersHandler implements IQueryHandler<ListUsersQuery> {
 
     const hasNextPage = total > limit * page;
 
-    return { users, total, hasNextPage };
+    return { users, total, hasNextPage, page };
   }
 }
