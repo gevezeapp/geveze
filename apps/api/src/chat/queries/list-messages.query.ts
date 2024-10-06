@@ -1,3 +1,7 @@
 export class ListMessagesQuery {
-  constructor(public readonly channel: string, public readonly page: number) {}
+  constructor(
+    public readonly channel: string,
+    public readonly user: string,
+    public readonly page: number,
+  ) {}
 }
