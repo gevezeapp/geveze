@@ -1,6 +1,10 @@
-import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 
 export class ListChannelsDto {
   @IsNumber()
-  page: number;
+  @Min(1)
+  @Type(() => Number)
+  @IsOptional()
+  page?: number;
 }

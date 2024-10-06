@@ -6,6 +6,7 @@ import {
 } from "@typegoose/typegoose";
 import { Project } from "./Project";
 import { ChatUser } from "./ChatUser";
+import mongoose from "mongoose";
 
 export class ChannelMember {
   @prop({ required: true, ref: () => Channel })
@@ -13,6 +14,117 @@ export class ChannelMember {
 
   @prop({ required: true, ref: () => ChatUser })
   public user: Ref<ChatUser>;
+
+  public static async listChannels(
+    this: ReturnModelType<typeof ChannelMember>,
+    data
+  ) {
+    const list = await this.aggregate([
+      {
+        $match: {
+          user: mongoose.Types.ObjectId.createFromHexString(data.user),
+        },
+      },
+      { $skip: data.skip },
+      {
+        $limit: data.limit,
+      },
+      {
+        $lookup: {
+          from: "channels",
+          localField: "channel",
+          foreignField: "_id",
+          let: { channelId: "$channel" },
+          pipeline: [
+            {
+              $lookup: {
+                from: "messages",
+                localField: "_id",
+                foreignField: "channel",
+                pipeline: [
+                  {
+                    $lookup: {
+                      from: "chatusers",
+                      localField: "sender",
+                      foreignField: "_id",
+                      pipeline: [
+                        {
+                          $project: {
+                            id: "$externalId",
+                            _id: 0,
+                          },
+                        },
+                      ],
+                      as: "sender",
+                    },
+                  },
+                  { $sort: { createdAt: -1 } },
+                  { $limit: 1 },
+                  {
+                    $project: {
+                      message: 1,
+                      createdAt: 1,
+                      updatedAt: 1,
+                      sender: { $arrayElemAt: ["$sender", 0] },
+                    },
+                  },
+                ],
+                as: "lastMessage",
+              },
+            },
+            {
+              $lookup: {
+                from: "channelmembers",
+                localField: "_id",
+                foreignField: "channel",
+                pipeline: [
+                  {
+                    $lookup: {
+                      from: "chatusers",
+                      localField: "user",
+                      foreignField: "_id",
+                      pipeline: [
+                        {
+                          $project: {
+                            id: "$externalId",
+                            _id: 0,
+                          },
+                        },
+                      ],
+                      as: "user",
+                    },
+                  },
+                  { $limit: 2 },
+                  { $unwind: "$user" },
+                  { $project: { channel: 0, __v: 0 } },
+                ],
+                as: "members",
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                members: 1,
+                lastMessage: {
+                  $arrayElemAt: ["$lastMessage", 0],
+                },
+              },
+            },
+          ],
+          as: "channel",
+        },
+      },
+      { $unwind: "$channel" },
+
+      {
+        $replaceRoot: {
+          newRoot: "$channel",
+        },
+      },
+    ]);
+
+    return list;
+  }
 }
 
 export class Channel {
