@@ -17,7 +17,12 @@ export class UserController {
     query: ListUsersDto,
   ) {
     return this.queryBus.execute(
-      new ListUsersQuery(req.user.project, query.page || 1, query.q),
+      new ListUsersQuery(
+        req.user.project,
+        query.page || 1,
+        req.user._id,
+        query.q,
+      ),
     );
   }
 

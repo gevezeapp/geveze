@@ -18,6 +18,7 @@ export class ListUsersHandler implements IQueryHandler<ListUsersQuery> {
 
     const filter = {
       project: project._id,
+      _id: { $ne: query.user },
       ...(query.q && {
         $or: [
           { displayName: { $regex: query.q, $options: 'i' } },

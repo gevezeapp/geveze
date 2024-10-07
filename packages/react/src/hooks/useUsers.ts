@@ -6,9 +6,14 @@ export const useUsers = () => {
     queryKey: ["users"],
     queryFn: ({ pageParam }) =>
       axios
-        .get("/chat/users", { params: { page: pageParam } })
+        .get<{
+          page: number;
+          users: { id: number; displayName: string }[];
+          total: number;
+          hasNextPage: boolean;
+        }>("/chat/users", { params: { page: pageParam } })
         .then((res) => res.data),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, pages) => lastPage.page + 1,
+    getNextPageParam: (lastPage) => lastPage.page + 1,
   });
 };

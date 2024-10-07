@@ -1,6 +1,6 @@
 export class SendMessageCommand {
   constructor(
-    public readonly toUser: string,
+    public readonly channel: string,
     public readonly message: string,
     public readonly sender: string,
   ) {}

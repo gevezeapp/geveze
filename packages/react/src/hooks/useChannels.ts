@@ -6,9 +6,19 @@ export const useChannels = () => {
     queryKey: ["channels"],
     queryFn: ({ pageParam }) =>
       axios
-        .get("/chat/channels", { params: { page: pageParam } })
+        .get<{
+          page: number;
+          channels: {
+            _id: string;
+            user: { id: string; displayName: string };
+            lastMessage?: { message: string };
+            unread: number;
+          }[];
+          total: number;
+          hasNextPage: boolean;
+        }>("/chat/channels", { params: { page: pageParam } })
         .then((res) => res.data),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, pages) => lastPage.page + 1,
+    getNextPageParam: (lastPage) => lastPage.page + 1,
   });
 };

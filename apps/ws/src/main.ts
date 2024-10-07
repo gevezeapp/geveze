@@ -9,6 +9,7 @@ import {
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
 import { EventsGateway } from './events/events.gateway';
 import { Server } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
 
 class RedisWSContext extends RedisContext {
   server: Server;
@@ -55,16 +56,18 @@ class ServerRedisEx extends ServerRedis {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigService);
   const ms = await NestFactory.createMicroservice(AppModule, {
     strategy: new ServerRedisEx(
       {
-        url: 'redis://localhost:6379',
+        host: config.get('redis_host'),
+        port: config.get('redis_port'),
       },
       app.get(EventsGateway),
     ),
   });
   app.enableCors();
-  await app.listen(5000);
+  await app.listen(config.get('port'));
   await ms.listen();
 }
 bootstrap();

@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { SendMessageCommand } from '../commands/send-message.command';
 import {
   ChannelModel,
@@ -17,15 +17,16 @@ export class SendMessageHandler implements ICommandHandler<SendMessageCommand> {
   constructor(@Inject('WS_SERVICE') private client: ClientRedis) {}
 
   async execute(command: SendMessageCommand): Promise<Message> {
-    const user = await ChatUserModel.findOne({
-      externalId: command.toUser,
-    }).lean();
-
-    const channel = await ChannelModel.findChannel({
-      project: user.project,
-      key: [command.sender, user._id.toString()].sort().join('-'),
-      users: [user._id, new mongoose.Types.ObjectId(command.sender)],
+    const channels = await ChannelMemberModel.listChannels({
+      limit: 1,
+      skip: 0,
+      user: command.sender,
+      channel: command.channel,
     });
+
+    if (!channels[0]) throw new NotFoundException('Channel not found!');
+
+    const channel = channels[0];
 
     const message = await MessageModel.create({
       channel: channel._id,
@@ -34,8 +35,16 @@ export class SendMessageHandler implements ICommandHandler<SendMessageCommand> {
     });
 
     await ChannelMemberModel.updateMany(
-      { channel: channel._id },
-      { $inc: { unread: 1 }, lastActivity: Date.now() },
+      { channel: channel._id, user: { $ne: command.sender } },
+      {
+        $inc: { unread: 1 },
+        $set: { lastActivity: Date.now() },
+      },
+    );
+
+    await ChannelMemberModel.updateOne(
+      { channel: channel._id, user: command.sender },
+      { $set: { lastActivity: Date.now() } },
     );
 
     await message.populate({

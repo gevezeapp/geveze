@@ -1,3 +1,4 @@
+import { UserModel } from '@geveze/db';
 import { JwtService } from '@nestjs/jwt';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -26,12 +27,28 @@ export class EventsGateway {
 
         const user = await this.jwtService.verifyAsync(token);
 
-        socket.join(user._id.toString());
+        const rooms = this.server.of('/').adapter.rooms.get(user._id);
+        if (!rooms) {
+          UserModel.findOneAndUpdate(
+            { _id: user._id, isOnline: false },
+            { isOnline: true },
+          );
+        }
+
+        socket.join(user._id);
+        socket.data = user;
         next();
       } catch (error) {
-        console.log(error);
         new Error('');
       }
     });
+  }
+
+  handleDisconnect(client: Socket) {
+    client.data;
+    const rooms = this.server.of('/').adapter.rooms.get(client.data._id);
+    if (!rooms) {
+      UserModel.findOneAndUpdate({ _id: client.data._id }, { isOnline: false });
+    }
   }
 }

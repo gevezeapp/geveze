@@ -3,6 +3,7 @@ import { EventsModule } from './events/events.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
+import mongoose from 'mongoose';
 
 @Module({
   imports: [
@@ -24,6 +25,19 @@ import configuration from './config/configuration';
     EventsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: 'database',
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        mongoose
+          .connect(config.get('database.url'), {
+            directConnection: true,
+            maxPoolSize: 10000,
+          })
+          .then(() => console.log('connected'));
+      },
+    },
+  ],
 })
 export class AppModule {}

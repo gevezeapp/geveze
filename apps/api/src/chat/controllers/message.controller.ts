@@ -38,7 +38,7 @@ export class MessageController {
   @Post('')
   async sendMessage(@Body() body: SendMessageDto, @Req() req) {
     return this.commandBus.execute(
-      new SendMessageCommand(body.toUser, body.message, req.user._id),
+      new SendMessageCommand(body.channel, body.message, req.user._id),
     );
   }
 }
